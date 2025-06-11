@@ -4,6 +4,7 @@ import os
 from time import time
 from werkzeug.utils import secure_filename
 
+# Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or '1'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 4
@@ -58,8 +59,21 @@ def upload_files():
             abort(400)
 
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        return redirect(url_for('params', filename=filename))
 
     return redirect(url_for('index'))
+
+# Parameter selection for Perona-Malik edge enhancement
+@app.route('/params/<filename>', methods=['GET', 'POST'])
+def params(filename):
+    if request.method == 'POST':
+        iterations = int(request.form['iterations'])
+        if iterations > 20:
+            flash("Image processing")
+            process_image.delay(0, iterations, 100)
+
+        return redirect(url_for('index'))
+    return render_template('params.html', file=filename)
 
 # Temporary, image source for uploads display
 @app.route('/uploads/<filename>')

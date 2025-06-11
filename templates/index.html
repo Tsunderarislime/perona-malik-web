@@ -1,17 +1,21 @@
-<!doctype html>
-<html>
-  <head>
-    <title>File Upload</title>
-  </head>
-  <body>
-    <h1>File Upload</h1>
-    <form method="POST" action="" enctype="multipart/form-data">
-      <p><input type="file" name="file"></p>
-      <p><input type="submit" value="Submit"></p>
-    </form>
-    <hr>
-    {% for file in files %}
-      <img src="{{ url_for('upload', filename=file) }}" style="width: 128px">
-    {% endfor %}
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>Upload a File!</h3>
+  <form method="POST" action="" enctype="multipart/form-data">
+    <div class="form-group mb-3">
+      <input type="file" class="form-control" name="file" style="max-width: 50%">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+  <!-- Temporary flash test, remove later -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {%endfor%}
+    {%endif%}
+  {%endwith%}
+
+{% endblock %}

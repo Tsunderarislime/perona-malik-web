@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>Edit Parameters!</h3>
+  <div class="media">
+    <img class="align-self-center mr-3" src="{{ url_for('upload', filename=file) }}" style="max-width: 50%">
+    <div class="media-body">
+      <form method="POST" action="" enctype="multipart/form-data">
+      <div class="iterations">
+        <input type="range" min="1" max="25" value="10" class="slider" id="n-iterations" name="iterations">
+        <p>Number of Iterations: <span id="n-iterations-value"></span></p>
+      </div>
+      <p><input type="submit" value="Go!"></p>
+    </div>
+    
+  </form>
+  </div>
+  
+  <script>
+  var slider = document.getElementById("n-iterations");
+  var output = document.getElementById("n-iterations-value");
+  output.innerHTML = slider.value;
+
+  slider.oninput = function() {
+    output.innerHTML = this.value;
+  }
+  </script>
+  
+{% endblock %}
