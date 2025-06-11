@@ -29,8 +29,8 @@ def setup_periodic_tasks(sender: Celery, **kwargs):
 
 # TODO: Process the image
 @celery.task
-def process_image(image_path, slider_value, numeric_value):
-    return slider_value + numeric_value
+def process_image(image_path, iterations, time_step_size, k, g_func):
+    return image_path
 
 # Cleanup task, remove images in the uploads folder if they've been there for over an hour.
 @celery.task
@@ -40,11 +40,25 @@ def clean():
         if time() - im > 3600:
             os.remove(im)
 
-# Temporary, display each image in the uploads folder
-@app.route('/')
+# This should just be the file upload page
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    files = os.listdir(app.config['UPLOAD_PATH'])
-    return render_template('index.html', files=files)
+    if request.method == 'POST':
+        uploaded_file = request.files['file']
+        filename = secure_filename(uploaded_file.filename)
+
+        if filename != '':
+            file_ext = os.path.splitext(filename)[1]
+
+            if file_ext not in app.config['UPLOAD_EXTENSIONS']:
+                abort(400)
+
+            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+            return redirect(url_for('params', filename=filename))
+        else:
+            flash("Please upload a file.")
+
+    return render_template('index.html')
 
 # Get file from upload
 @app.route('/', methods=['POST'])
@@ -68,14 +82,16 @@ def upload_files():
 def params(filename):
     if request.method == 'POST':
         iterations = int(request.form['iterations'])
-        if iterations > 20:
-            flash("Image processing")
-            process_image.delay(0, iterations, 100)
+        time_step_size = float(request.form['time-step-size'])
+        k = float(request.form['constant-k'])
+        g_func = int(request.form['g-function'])
+        flash(f"{iterations} iterations, {time_step_size} step size, K = {k}, function {g_func}. File to change is: {os.path.join(app.config['UPLOAD_PATH'], filename)}")
+        process_image.delay(os.path.join(app.config['UPLOAD_PATH'], filename), iterations, time_step_size, k, g_func)
 
         return redirect(url_for('index'))
     return render_template('params.html', file=filename)
 
-# Temporary, image source for uploads display
+# Image source for uploads display
 @app.route('/uploads/<filename>')
 def upload(filename):
     return send_from_directory(app.config['UPLOAD_PATH'], filename)

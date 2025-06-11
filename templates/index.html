@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>Upload a File!</h3>
-  <form method="POST" action="" enctype="multipart/form-data">
-    <div class="form-group mb-3">
-      <input type="file" class="form-control" name="file" style="max-width: 50%">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-
-  <!-- Temporary flash test, remove later -->
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {%endfor%}
-    {%endif%}
-  {%endwith%}
+    <h3>Upload a File!</h3>
+    <!-- Temporary flash test, remove later -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="" enctype="multipart/form-data">
+        <div class="form-group mb-4">
+            <input type="file" class="form-control mw-100" name="file">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 
 {% endblock %}
