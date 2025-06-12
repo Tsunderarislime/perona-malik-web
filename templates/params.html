@@ -1,32 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Edit Parameters!</h3>
-    <div class="media">
+    <h1>Edit Parameters!</h1>
+    <div class="container mb-1">
         <img class="mx-auto d-block w-50" src="{{ url_for('upload', filename=file) }}">
         <hr>
         <div class="container mb-3">
             <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-group mb-1">
                     <label for="n-iterations" class="form-label"><b>Number of Iterations: </b><span id="n-iterations-value"></span></label> <br>
-                    <input type="range" min="1" max="20" value="10" class="form-range" id="n-iterations" name="iterations">
+                    <input type="range" min="1" max="20" value="10" class="form-range" id="n-iterations" name="iterations" data-bs-toggle="tooltip"
+                        title="This will increase the processing time.">
                 </div> <br>
                 <div class="form-group mb-1">
                     <label for="time-step-size" class="form-label"><b>Time Step Size: </b></label>
-                    <input type="number" min="0.01" value="0.25" step="0.01" class="form-control" name="time-step-size">
+                    <input type="number" min="0.01" value="0.25" step="0.01" class="form-control" name="time-step-size" data-bs-toggle="tooltip"
+                        title="The algorithm is stable if this is in the range (0, 0.25].">
                 </div> <br>
                 <div class="form-group mb-1">
                     <label for="constant-k" class="form-label"><b>Constant K: </b></label>
-                    <input type="number" min="0.01" value="0.5" step="0.01" class="form-control" name="constant-k">
+                    <input type="number" min="0.01" value="0.5" step="0.01" class="form-control" name="constant-k" data-bs-toggle="tooltip"
+                    title="This effectively defines what an ‘edge’ is in the detector. High values will cause the image to get blurry.">
                 </div> <br>
                 <div class="form-group mb-1">
                     <label for="g-function" class="form-label"><b>G Function: </b></label> <br>
                     <input type="radio" name="g-function" value="1" checked="checked" id="exponential">
-                    <label for="exponential" class="form-label">1 - Exponential</label><br>
+                    <label for="exponential" class="form-label" data-bs-toggle="tooltip" title="exp(-(imgradient(img)./K).^2)">1 - Exponential</label><br>
                     <input type="radio" name="g-function" value="2" id="rational">
-                    <label for="rational" class="form-label">2 - Rational</label><br>
+                    <label for="rational" class="form-label" data-bs-toggle="tooltip" title="1 ./ (1 + (imgradient(x)./K).^2)">2 - Rational</label><br>
                 </div> <br>
-                <button type="submit" class="btn btn-primary">Go!</button>
+                <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Begin image processing.">Go!</button>
             </form>
         </div>
     </div>
@@ -39,6 +42,11 @@
     slider.oninput = function() {
         output.innerHTML = this.value;
     }
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
     </script>
   
 {% endblock %}

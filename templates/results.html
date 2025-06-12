@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Results!</h1>
+    <div class="container mx-auto d-block p-2">
+        <img-comparison-slider class="slider-with-shadows" style="width: 100%">
+            <img class="mx-auto d-block w-50" slot="first" src="{{ url_for('upload', filename=file) }}" />
+            <img class="mx-auto d-block w-50" slot="second" src="{{ url_for('result', filename=file) }}" />
+        </img-comparison-slider>
+        <hr>
+    </div>
+
+{% endblock %}

@@ -34,7 +34,7 @@ def perona_malik(U, g, ts, K, w, h) -> np.ndarray:
 
 # Main body of the script
 def main(image_channel, iterations, time_step_size, k, g_func, upload_path, result_path, image_name):
-    img = cv2.imread(os.path.join(upload_path, image_name))[:, :, image_channel]
+    img = cv2.imread(os.path.join(upload_path, image_name), cv2.IMREAD_UNCHANGED)[:, :, image_channel]
     # Rescale the pixel intensities from [0, 255] to [0, 1]
     img = img/255.0
     
