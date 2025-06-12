@@ -21,8 +21,8 @@ os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
 os.makedirs(app.config['RESULT_PATH'], exist_ok=True)
 
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['result_backend'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = 'redis://redis:6379/0'
+app.config['result_backend'] = 'redis://redis:6379/0'
 
 # Initialize Celery
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
