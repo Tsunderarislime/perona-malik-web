@@ -3,6 +3,8 @@ from celery import Celery
 import os
 from time import time
 from werkzeug.utils import secure_filename
+import cv2
+import scripts.pm as pm
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -10,9 +12,11 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or '1'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 4
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 app.config['UPLOAD_PATH'] = 'uploads'
+app.config['RESULT_PATH'] = 'result'
 
-# Make the uploads folder, if it does not already exist
+# Make the folders, if they do not already exist
 os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
+os.makedirs(app.config['RESULT_PATH'], exist_ok=True)
 
 # Celery configuration
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
@@ -29,14 +33,20 @@ def setup_periodic_tasks(sender: Celery, **kwargs):
 
 # TODO: Process the image
 @celery.task
-def process_image(image_path, iterations, time_step_size, k, g_func):
-    return image_path
+def process_image_channel(image_channel, iterations, time_step_size, k, g_func, upload_path, result_path, image_name):
+    return pm.main(image_channel, iterations, time_step_size, k, g_func - 1, upload_path, result_path, image_name)
 
-# Cleanup task, remove images in the uploads folder if they've been there for over an hour.
+# Cleanup task, remove images in the folders if they've been there for over an hour.
 @celery.task
 def clean():
-    images = [os.path.join(app.config['UPLOAD_PATH'], im) for im in os.listdir('uploads')]
-    for im in images:
+    uploaded_images = [os.path.join(app.config['UPLOAD_PATH'], im) for im in os.listdir(app.config['UPLOAD_PATH'])]
+    result_images = [os.path.join(app.config['RESULT_PATH'], im) for im in os.listdir(app.config['RESULT_PATH'])]
+
+    for im in uploaded_images:
+        if time() - im > 3600:
+            os.remove(im)
+    
+    for im in result_images:
         if time() - im > 3600:
             os.remove(im)
 
@@ -85,8 +95,11 @@ def params(filename):
         time_step_size = float(request.form['time-step-size'])
         k = float(request.form['constant-k'])
         g_func = int(request.form['g-function'])
-        flash(f"{iterations} iterations, {time_step_size} step size, K = {k}, function {g_func}. File to change is: {os.path.join(app.config['UPLOAD_PATH'], filename)}")
-        process_image.delay(os.path.join(app.config['UPLOAD_PATH'], filename), iterations, time_step_size, k, g_func)
+
+        # Process the image, call process for each colour channel
+        channels = cv2.imread(os.path.join(app.config['UPLOAD_PATH'], filename)).shape[2]
+        for i in range(channels):
+            process_image_channel.delay(i, iterations, time_step_size, k, g_func, app.config['UPLOAD_PATH'], app.config['RESULT_PATH'], filename)
 
         return redirect(url_for('index'))
     return render_template('params.html', file=filename)
@@ -95,6 +108,11 @@ def params(filename):
 @app.route('/uploads/<filename>')
 def upload(filename):
     return send_from_directory(app.config['UPLOAD_PATH'], filename)
+
+# Image source for result display
+@app.route('/result/<filename>')
+def result(filename):
+    return send_from_directory(app.config['RESULT_PATH'], filename)
 
 # Debug mode if run directly
 if __name__ == '__main__':
