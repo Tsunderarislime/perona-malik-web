@@ -2,36 +2,36 @@
 
 {% block content %}
     <h1>Edit Parameters!</h1>
-    <div class="container mb-1">
-        <img class="mx-auto d-block w-50" src="{{ url_for('upload', filename=file) }}">
-        <hr>
-        <div class="container mb-3">
-            <form method="POST" action="" enctype="multipart/form-data">
-                <div class="form-group mb-1">
-                    <label for="n-iterations" class="form-label"><b>Number of Iterations: </b><span id="n-iterations-value"></span></label> <br>
-                    <input type="range" min="1" max="20" value="10" class="form-range" id="n-iterations" name="iterations" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="This will increase the processing time.">
-                </div> <br>
-                <div class="form-group mb-1">
-                    <label for="time-step-size" class="form-label"><b>Time Step Size: </b></label>
-                    <input type="number" min="0.01" value="0.25" step="0.01" class="form-control" name="time-step-size" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="The algorithm is stable if this is in the range (0, 0.25].">
-                </div> <br>
-                <div class="form-group mb-1">
-                    <label for="constant-k" class="form-label"><b>Constant K: </b></label>
-                    <input type="number" min="0.01" value="0.25" step="0.01" class="form-control" name="constant-k" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                    title="This effectively defines what an ‘edge’ is in the detector. High values will cause the image to get blurry.">
-                </div> <br>
-                <div class="form-group mb-1">
-                    <label for="g-function" class="form-label"><b>G Function: </b></label> <br>
-                    <input type="radio" name="g-function" value="1" checked="checked" id="exponential">
-                    <label for="exponential" class="form-label" data-bs-toggle="tooltip" data-bs-placement="bottom" title="exp(-(imgradient(img)./K).^2)">1 - Exponential</label><br>
-                    <input type="radio" name="g-function" value="2" id="rational">
-                    <label for="rational" class="form-label" data-bs-toggle="tooltip" data-bs-placement="bottom" title="1 ./ (1 + (imgradient(x)./K).^2)">2 - Rational</label><br>
-                </div> <br>
-                <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Begin image processing.">Go!</button>
-            </form>
-        </div>
+    <div class="media mb-2 rounded-3" style="width: 100%; background-color: rgba(0, 0, 0, 0.75)">
+        <img class="mx-auto d-block w-50" slot="first" src="{{ url_for('upload', filename=file) }}" />
+    </div>
+    <hr>
+    <div class="container mb-3">
+        <form method="POST" action="" enctype="multipart/form-data">
+            <div class="form-group mb-1">
+                <label for="n-iterations" class="form-label"><b>Number of Iterations: </b><span id="n-iterations-value"></span></label> <br>
+                <input type="range" min="1" max="20" value="10" class="form-range" id="n-iterations" name="iterations" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                    title="This will increase the processing time.">
+            </div> <br>
+            <div class="form-group mb-1">
+                <label for="time-step-size" class="form-label"><b>Time Step Size: </b></label>
+                <input type="number" min="0.01" value="0.25" step="0.01" class="form-control" name="time-step-size" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                    title="The algorithm is stable if this is in the range (0, 0.25].">
+            </div> <br>
+            <div class="form-group mb-1">
+                <label for="constant-k" class="form-label"><b>Constant K: </b></label>
+                <input type="number" min="0.01" value="0.25" step="0.01" class="form-control" name="constant-k" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="This effectively defines what an ‘edge’ is in the detector. High values will cause the image to get blurry.">
+            </div> <br>
+            <div class="form-group mb-1">
+                <label for="g-function" class="form-label"><b>G Function: </b></label> <br>
+                <input type="radio" name="g-function" value="1" checked="checked" id="exponential">
+                <label for="exponential" class="form-label" data-bs-toggle="tooltip" data-bs-placement="bottom" title="exp(-(imgradient(img)./K).^2)">1 - Exponential</label><br>
+                <input type="radio" name="g-function" value="2" id="rational">
+                <label for="rational" class="form-label" data-bs-toggle="tooltip" data-bs-placement="bottom" title="1 ./ (1 + (imgradient(x)./K).^2)">2 - Rational</label><br>
+            </div> <br>
+            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Begin image processing.">Go!</button>
+        </form>
     </div>
   
     <script>
