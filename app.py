@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, abort, send_from_directory, jsonify
+from flask import Flask, render_template, request, flash, redirect, url_for, abort, send_from_directory
 from celery import Celery
 from dotenv import load_dotenv
 import os
 from time import time
 from werkzeug.utils import secure_filename
+import hashlib
 import cv2
 from numpy import stack
 import scripts.pm as pm
@@ -35,7 +36,7 @@ celery.conf.update(app.config)
 def setup_periodic_tasks(sender: Celery, **kwargs):
     sender.add_periodic_task(300.0, clean.s(), name='Clean Uploads Every 5 Minutes', expires=60.0)
 
-# TODO: Process the image
+# Process each channel of the image
 @celery.task
 def process_image_channel(image_channel, iterations, time_step_size, k, g_func, upload_path, result_path, image_name):
     return pm.main(image_channel, iterations, time_step_size, k, g_func - 1, upload_path, result_path, image_name)
@@ -68,29 +69,23 @@ def index():
             if file_ext not in app.config['UPLOAD_EXTENSIONS']:
                 abort(400)
 
-            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-            return redirect(url_for('params', filename=filename))
+            original_path = os.path.join(app.config['UPLOAD_PATH'], filename)
+        
+            uploaded_file.save(original_path)
+
+            # Renaming the file to a hash. This significantly reduces the chance someone overwrites another image with the same filename.
+            # This covers the edge case where two people upload different images with the same name, around the same time.
+            with open(original_path, 'rb') as f:
+                h = hashlib.shake_128(f.read())
+                rename = f'{h.hexdigest(16)}{file_ext}'
+                os.rename(original_path, os.path.join(app.config['UPLOAD_PATH'], rename))
+                f.close()
+
+            return redirect(url_for('params', filename=rename))
         else:
             flash("Please upload a file.")
 
     return render_template('index.html')
-
-# Get file from upload
-@app.route('/', methods=['POST'])
-def upload_files():
-    uploaded_file = request.files['file']
-    filename = secure_filename(uploaded_file.filename)
-
-    if filename != '':
-        file_ext = os.path.splitext(filename)[1]
-
-        if file_ext not in app.config['UPLOAD_EXTENSIONS']:
-            abort(400)
-
-        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-        return redirect(url_for('params', filename=filename))
-
-    return redirect(url_for('index'))
 
 # Parameter selection for Perona-Malik edge enhancement
 @app.route('/params/<filename>', methods=['GET', 'POST'])
@@ -132,6 +127,20 @@ def upload(filename):
 @app.route('/result/<filename>')
 def result(filename):
     return send_from_directory(app.config['RESULT_PATH'], filename)
+
+# Error handlers
+@app.errorhandler(400)
+def not_found_error(error):
+    flash('Invalid file type received. Please ensure the file you uploaded is either a .png, .jpg, or .gif.')
+    return render_template('400.html'), 400
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
 
 # Debug mode if run directly
 if __name__ == '__main__':

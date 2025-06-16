@@ -13,9 +13,9 @@
     {% endwith %}
     <form method="POST" action="" enctype="multipart/form-data">
         <div class="form-group mb-4">
-            <input type="file" class="form-control mw-100" name="file">
+            <input type="file" class="form-control mw-100" name="file"data-bs-toggle="tooltip" title="PNG, JPG, or GIF files only.">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Upload the image to start modifying parameters.">Submit</button>
     </form>
 
 {% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>This page does not exist</h1>
+    <a href="{{ url_for('index') }}">
+        <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="Return to the index page.">Go Back</button>
+    </a>
+{% endblock %}

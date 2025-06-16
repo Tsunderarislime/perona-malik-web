@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Something went wrong</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <a href="{{ url_for('index') }}">
+        <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="Return to the index page.">Go Back</button>
+    </a>
+{% endblock %}
