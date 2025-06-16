@@ -3,3 +3,4 @@ result/*
 venv/*
 __pycache__/*
 celerybeat-schedule
+.env

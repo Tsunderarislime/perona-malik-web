@@ -1,12 +1,14 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, abort, send_from_directory, jsonify
 from celery import Celery
-from celery.result import AsyncResult
+from dotenv import load_dotenv
 import os
 from time import time
 from werkzeug.utils import secure_filename
 import cv2
 from numpy import stack
 import scripts.pm as pm
+
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -21,8 +23,8 @@ os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
 os.makedirs(app.config['RESULT_PATH'], exist_ok=True)
 
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = 'redis://redis:6379/0'
-app.config['result_backend'] = 'redis://redis:6379/0'
+app.config['CELERY_BROKER_URL'] = os.environ.get('DATABASE_URL') or 'redis://localhost:6379/0'
+app.config['result_backend'] = os.environ.get('DATABASE_URL') or 'redis://localhost:6379/0'
 
 # Initialize Celery
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])

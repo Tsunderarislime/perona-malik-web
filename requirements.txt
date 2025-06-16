@@ -17,6 +17,7 @@ opencv-python-headless==4.11.0.86
 packaging==25.0
 prompt_toolkit==3.0.51
 python-dateutil==2.9.0.post0
+python-dotenv==1.1.0
 redis==6.2.0
 scipy==1.15.2
 six==1.17.0
