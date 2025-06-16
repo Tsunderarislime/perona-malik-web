@@ -39,10 +39,7 @@ RUN python -m pip install -r requirements.txt
 # Make sure the user owns everything in the container
 RUN chown -R appuser .
 RUN chmod 777 .
-
-# Install supervisor for running simultaneous processes
-RUN apt-get update && apt-get install -y supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN chmod +x ./start.sh 
 
 # Switch to the non-privileged user to run the application.
 USER appuser
@@ -50,5 +47,5 @@ USER appuser
 # Expose the port that the application listens on.
 EXPOSE 8000
 
-# Run supervisor
-CMD ["/usr/bin/supervisord"]
+# Run the workers and the server
+CMD ./start.sh
