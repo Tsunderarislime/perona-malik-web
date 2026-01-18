@@ -11,9 +11,10 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+    <p>Large files can take longer time to process. If it takes the server over 2 minutes to process, then it's probably too large.</p>
     <form method="POST" action="" enctype="multipart/form-data">
         <div class="form-group mb-4">
-            <input type="file" class="form-control mw-100" name="file"data-bs-toggle="tooltip" title="PNG, JPG, or GIF files only.">
+            <input type="file" class="form-control mw-100" name="file"data-bs-toggle="tooltip" title="PNG or JPG files only. 2MB file size limit.">
         </div>
         <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" title="Upload the image to start modifying parameters.">Submit</button>
     </form>

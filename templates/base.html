@@ -46,6 +46,17 @@
             -webkit-backdrop-filter: blur(3px);
             backdrop-filter: blur(3px);
         }
+
+        /* HTML: <div class="loader"></div> */
+        .loader {
+            width: 50px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 8px solid;
+            border-color: #000 #0000;
+            animation: l1 1s infinite;
+        }
+        @keyframes l1 {to{transform: rotate(.5turn)}}
     </style>
     
     </head>
@@ -70,10 +81,31 @@
         <div class="container p-5 border border-3 border-primary rounded-3" style="--bs-border-opacity: .5;">
             {% block content %} {% endblock %}
         </div>
+
+        <!-- Loading modal after submitting parameters -->
+        <div class="modal fade" id="loading" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="loading-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="loading-label">Processing...</h1>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mx-auto loader"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     
         <script>
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            var loadingModalElement = document.getElementById("loading");
+            var loadingModal = new bootstrap.Modal(loadingModalElement);
+
+            function loading() {
+                loadingModal.toggle();
+            }
         </script>
         
     </body>

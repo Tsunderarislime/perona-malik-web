@@ -14,8 +14,8 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or '1'
-app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 4
-app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 2
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png']
 app.config['UPLOAD_PATH'] = 'uploads'
 app.config['RESULT_PATH'] = 'result'
 
@@ -24,8 +24,8 @@ os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
 os.makedirs(app.config['RESULT_PATH'], exist_ok=True)
 
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = os.environ.get('DATABASE_URL') or 'redis://localhost:6379/0'
-app.config['result_backend'] = os.environ.get('DATABASE_URL') or 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
+app.config['result_backend'] = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
 
 # Initialize Celery
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
@@ -131,7 +131,7 @@ def result(filename):
 # Error handlers
 @app.errorhandler(400)
 def not_found_error(error):
-    flash('Invalid file type received. Please ensure the file you uploaded is either a .png, .jpg, or .gif.')
+    flash('Invalid file type received. Please ensure the file you uploaded is either a .png or .jpg.')
     return render_template('400.html'), 400
 
 @app.errorhandler(404)
