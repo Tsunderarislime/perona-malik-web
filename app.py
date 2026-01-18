@@ -28,7 +28,7 @@ app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL') or 'redis://localh
 app.config['result_backend'] = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
 
 # Initialize Celery
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['result_backend'])
 celery.conf.update(app.config)
 
 # Set up uploads folder cleaning task, every 5 minutes
