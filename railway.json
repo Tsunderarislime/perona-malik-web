@@ -4,12 +4,12 @@
     "nixpacksPlan": {
       "phases": {
         "setup": {
-          "nixPkgs": ["...", "parallel"]
+          "nixPkgs": ["..."]
         }
       }
     }
   },
   "deploy": {
-    "startCommand": "parallel --ungroup --halt now,fail=1 ::: 'celery -A app.celery worker --loglevel=INFO' 'celery -A app.celery beat --loglevel=INFO' 'gunicorn'"
+    "startCommand": "celery -A app.celery worker --loglevel=INFO &; celery -A app.celery beat --loglevel=INFO &; gunicorn"
   }
 }
