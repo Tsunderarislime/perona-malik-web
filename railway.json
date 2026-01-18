@@ -10,6 +10,6 @@
     }
   },
   "deploy": {
-    "startCommand": "./railway.sh"
+    "startCommand": "source railway.sh"
   }
 }
